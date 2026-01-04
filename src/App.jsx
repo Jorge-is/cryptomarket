@@ -1,3 +1,4 @@
+import axios from "axios"
 import { useEffect, useState } from "react"
 
 function App() {
@@ -8,10 +9,9 @@ function App() {
   const [criptos, setCriptos] = useState()
 
   useEffect(() => {
-    fetch(`${API_URL}assets`, {method: "GET", headers: {"Authorization": `Bearer ${API_KEY}`}})
-      .then((response) => response.json())
-      .then((data) => {
-        setCriptos(data.data)
+    axios.get(`${API_URL}assets`, {headers: {Authorization: `Bearer ${API_KEY}`}})
+      .then((response) => {
+        setCriptos(response.data.data)
       })
       .catch((error) => {
         console.error("La petición falló. Error: " + error)
