@@ -1,7 +1,9 @@
 import axios from "axios"
 import { useEffect, useState } from "react"
+import "./Grid.css"
+import Cripto from "./cripto/Cripto"
 
-function App() {
+function Grid() {
 
   const API_URL = import.meta.env.VITE_API_URL
   const API_KEY = import.meta.env.VITE_API_KEY
@@ -21,18 +23,18 @@ function App() {
   if (!criptos) return <span>Cargando...</span>
 
   return (
-    <>
+    <div className="app-container">
       <h1>Lista de Criptomonedas</h1>
 
-      <ol>
+      <div className="cripto-container">
         {
           criptos.map(cripto => (
-            <li key={cripto.id}>Nombre: {cripto.name} ({cripto.symbol}) - Precio: {cripto.priceUsd}</li>
+            <Cripto cripto={cripto}/>           
         ))
-        }
-      </ol>
-    </>
+      }
+      </div>
+    </div>
   )
 }
 
-export default App
+export default Grid
