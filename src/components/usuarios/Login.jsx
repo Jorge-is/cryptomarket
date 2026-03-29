@@ -5,7 +5,8 @@ import "./Login.css"
 
 function Login() {
 
-  const API_USERS_URL = import.meta.env.VITE_API_USERS_URL;
+  const USERS_API_URL = import.meta.env.VITE_USERS_API_URL
+  const USERS_API_KEY = import.meta.env.VITE_USERS_API_KEY
 
   const navigation = useNavigate()
 
@@ -17,21 +18,31 @@ function Login() {
   const [cargando, setCargando] = useState(false)
   const [error, setError] = useState()
 
-  function submit(e) {
+  const submit = (e) => {
     e.preventDefault()
     setCargando(true)
     setError(null)
-    axios.post(`${API_USERS_URL}`, user)
-      .then(response => {
-        setCargando(false)
-        localStorage.setItem("tokenCriptoMarket", response.data.data)
-        navigation("/")
-      })
-      .catch(error => {
-        setCargando(false)
-        console.table(error)
-        setError(error.response.data.error)
-      })
+
+    axios.post(
+      USERS_API_URL, 
+      user, 
+      {
+        headers: {
+          Authorization: `Bearer ${USERS_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    )
+    .then(response => {
+      setCargando(false)
+      localStorage.setItem("tokenCriptoMarket", response.data.data)
+      navigation("/")
+    })
+    .catch(error => {
+      setCargando(false)
+      console.error(error)
+      setError(error.response?.data?.error || "Credenciales incorrectas")
+    })
   }
 
   if (localStorage.getItem("tokenCriptoMarket")) return <Navigate to="/" />
@@ -56,18 +67,18 @@ function Login() {
               ...user,
               password: e.target.value
             })
-          }} type="password" name="password"/>
+          }} type="password" name="password" />
         </div>
         <div className="submit">
           <input
-          type="submit"
-          value={cargando ? "cargando..." : "Ingresar"}
-          className="link"
-        />
+            type="submit"
+            value={cargando ? "cargando..." : "Ingresar"}
+            className="link"
+          />
         </div>
       </form>
       {
-        error && <span className="error">Error: {error}</span>
+        error && <span className="error">{error}</span>
       }
     </div>
   )
