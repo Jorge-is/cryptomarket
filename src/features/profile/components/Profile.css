@@ -13,7 +13,7 @@
 }
 
 .avatar {
-  background: linear-gradient(135deg, var(--accent-primary), #065F43);
+  background: linear-gradient(135deg, var(--accent-primary), #1E40AF); /* Blue transition */
   width: 100px;
   height: 100px;
   border-radius: 50%;
@@ -23,7 +23,12 @@
   font-size: 3rem;
   font-weight: 700;
   color: white;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
+  box-shadow: var(--shadow-glow);
+  flex-shrink: 0;
+}
+
+.profile-info {
+  flex: 1;
 }
 
 .profile-info h1 {
@@ -38,10 +43,21 @@
   padding-bottom: 1rem;
 }
 
+.crypto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
 .empty-state {
   padding: 4rem 2rem;
   text-align: center;
   color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
 .empty-state p {
@@ -51,9 +67,33 @@
 }
 
 @media (max-width: 768px) {
+  .profile-container {
+    gap: 2rem;
+  }
+  
   .profile-header {
     flex-direction: column;
     text-align: center;
-    padding: 2rem;
+    padding: 2rem 1rem;
+    gap: 1.5rem;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
+  
+  .profile-info h1 {
+    font-size: 1.75rem;
+  }
+
+  .portfolio-section h2 {
+    font-size: 1.5rem;
+    text-align: center;
+  }
+
+  .crypto-grid {
+    grid-template-columns: 1fr; /* Full width cards on mobile */
   }
 }
