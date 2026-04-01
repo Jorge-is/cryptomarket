@@ -1,17 +1,18 @@
 /* CSS Variables for Premium Dark Theme */
 :root {
   /* Colors */
-  --bg-primary: #0A0E17;
-  --bg-secondary: #131A2A;
-  --bg-tertiary: #1E293B;
+  --bg-primary: #0D1421;    /* Deep dark blue CMC style */
+  --bg-secondary: #1A2234;  /* Panel dark blue */
+  --bg-tertiary: #222B3F;   /* Hover panel blue */
   
-  --text-primary: #F8FAFC;
-  --text-secondary: #94A3B8;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A5B5; /* Muted steel text */
   --text-muted: #64748B;
   
-  --accent-primary: #3B82F6; /* Blue 500 */
-  --accent-hover: #2563EB;   /* Blue 600 */
-  --accent-danger: #EF4444; /* Red for negative price changes */
+  --accent-primary: #3861FB; /* Vivid Blue CMC */
+  --accent-hover: #2C50CD;   
+  --accent-success: #16C784; /* CMC Green */
+  --accent-danger: #EA3943;  /* CMC Red */
   
   --border-color: rgba(255, 255, 255, 0.08);
   --glass-bg: rgba(19, 26, 42, 0.6);
