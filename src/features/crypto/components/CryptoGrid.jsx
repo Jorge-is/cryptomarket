@@ -1,13 +1,17 @@
 import { useState } from "react";
-import CryptoCard from "./CryptoCard";
+import { useNavigate } from "react-router-dom";
 import usePetition from "../../../hooks/usePetition";
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal, Star, TrendingUp, TrendingDown } from "lucide-react";
+import { useFavorites } from "../../profile/hooks/useFavorites";
+import { formatCurrency, parseFloatNumber } from "../../../utils/numbers";
 import "./CryptoGrid.css";
 
 function CryptoGrid() {
   const [cryptos, loading] = usePetition("assets");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("rank");
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -37,44 +41,105 @@ function CryptoGrid() {
   return (
     <div className="crypto-grid-view">
       <div className="crypto-grid-header">
-        <h1>Mercado Global</h1>
-        <p className="subtitle">Explora las criptomonedas más importantes en tiempo real.</p>
+        <h1>Activos principales por capitalización</h1>
+        <p className="subtitle">Explora el mercado global de criptomonedas en tiempo real.</p>
       </div>
 
-      <div className="crypto-filters glass-panel">
+      <div className="crypto-filters">
         <div className="search-bar">
-          <Search className="search-icon" size={20} />
+          <Search className="search-icon" size={18} />
           <input 
             type="text" 
-            placeholder="Buscar criptomoneda por nombre" 
+            placeholder="Buscar por nombre" 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         
         <div className="filter-dropdown">
-          <SlidersHorizontal className="filter-icon" size={20} />
+          <SlidersHorizontal className="filter-icon" size={18} />
           <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
-             <option value="rank">Ranking Default</option>
-             <option value="price_desc">Precio: Mayor a Menor</option>
-             <option value="price_asc">Precio: Menor a Mayor</option>
-             <option value="change_desc">Cambio 24h: Ganancias</option>
-             <option value="change_asc">Cambio 24h: Pérdidas</option>
+             <option value="rank">Capitalización</option>
+             <option value="price_desc">Mayor Precio</option>
+             <option value="price_asc">Menor Precio</option>
+             <option value="change_desc">Top Ganadoras</option>
+             <option value="change_asc">Top Perdedoras</option>
           </select>
         </div>
       </div>
 
-      {filteredCryptos.length > 0 ? (
-        <div className="crypto-grid">
-          {filteredCryptos.map(crypto => (
-            <CryptoCard key={crypto.id} crypto={crypto} />
-          ))}
-        </div>
-      ) : (
-        <div className="empty-search glass-panel">
-          <p>No se encontraron resultados para "{searchTerm}"</p>
-        </div>
-      )}
+      <div className="table-responsive">
+        <table className="crypto-table">
+          <thead>
+            <tr>
+              <th className="th-star"></th>
+              <th className="th-rank">#</th>
+              <th className="th-name">Nombre</th>
+              <th className="text-right">Precio</th>
+              <th className="text-right">24h %</th>
+              <th className="text-right d-none-mobile">Cap de mercado</th>
+              <th className="text-right d-none-mobile">Volumen (24h)</th>
+              <th className="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredCryptos.length > 0 ? (
+              filteredCryptos.map((crypto) => {
+                const isPositive = crypto.changePercent24Hr > 0;
+                const favState = isFavorite(crypto.id);
+
+                return (
+                  <tr key={crypto.id} className="crypto-row" onClick={() => navigate(`/criptomonedas/${crypto.id}`)}>
+                    <td className="td-star" onClick={(e) => { e.stopPropagation(); toggleFavorite(crypto.id); }}>
+                      <Star 
+                        color={favState ? "#FCD34D" : "var(--text-muted)"} 
+                        fill={favState ? "#FCD34D" : "none"} 
+                        size={18} 
+                        strokeWidth={favState ? 0 : 2}
+                      />
+                    </td>
+                    <td className="td-rank">{crypto.rank}</td>
+                    <td className="td-name">
+                      <div className="crypto-name-container">
+                        <img 
+                          src={`https://assets.coincap.io/assets/icons/${crypto.symbol.toLowerCase()}@2x.png`} 
+                          alt={crypto.name} 
+                          className="table-crypto-logo" 
+                          onError={(e) => { e.target.src = 'https://coincap.io/static/logo_mark.png' }}
+                        />
+                        <span className="crypto-name-fw">{crypto.name}</span>
+                        <span className="crypto-symbol-fw">{crypto.symbol}</span>
+                      </div>
+                    </td>
+                    <td className="text-right td-price">{formatCurrency(crypto.priceUsd)}</td>
+                    <td className={`text-right td-change ${isPositive ? 'text-success' : 'text-danger'}`}>
+                      <span className="change-content">
+                        {isPositive ? <TrendingUp size={14}/> : <TrendingDown size={14}/>}
+                        {parseFloatNumber(crypto.changePercent24Hr)}%
+                      </span>
+                    </td>
+                    <td className="text-right d-none-mobile td-muted">{formatCurrency(crypto.marketCapUsd)}</td>
+                    <td className="text-right d-none-mobile td-muted">{formatCurrency(crypto.volumeUsd24Hr)}</td>
+                    <td className="text-center td-action">
+                      <button className="btn-buy-pill" onClick={(e) => { e.stopPropagation(); navigate(`/criptomonedas/${crypto.id}`); }}>
+                        Comprar
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="8">
+                  <div className="empty-search">
+                    <p>No se encontraron resultados para "{searchTerm}"</p>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
