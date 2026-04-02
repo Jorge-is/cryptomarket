@@ -22,7 +22,7 @@ function Navbar() {
       <div className="navbar-container">
         <div className="navbar-logo">
           <NavLink to="/">
-            Cripto<span className="text-accent">Market</span>
+            Crypto<span className="text-accent">Market</span>
           </NavLink>
         </div>
         
